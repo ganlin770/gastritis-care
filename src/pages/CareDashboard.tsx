@@ -6,7 +6,8 @@ import type { SymptomRecord, Food } from '../types';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { CareTips } from '../components/features/CareTips';
-import { Search, Activity, Flame, Soup, ClipboardList, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Activity, Flame, Soup, ClipboardList, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
+import mealPlan14d from '../assets/meal_plan_14d';
 
 type ViewMode = 'all' | 'tcm' | 'wm';
 
@@ -228,6 +229,24 @@ export const CareDashboard: React.FC = () => {
           </div>
           <div className="mt-4 text-xs text-gray-500">
             菜单以温软少油为原则；可根据个体耐受微调。
+          </div>
+        </Card>
+
+        {/* 14天脾胃调理食谱（精简卡片浏览） */}
+        <Card hoverable className="lg:col-span-3">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xl font-bold text-black flex items-center gap-2"><CalendarDays className="w-5 h-5"/>14天脾胃调理食谱</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {mealPlan14d.map((d, idx) => (
+              <div key={idx} className="p-4 rounded-xl border-2 border-gray-200 bg-white">
+                <div className="mb-2 font-bold text-black">第{idx+1}天</div>
+                <div className="text-sm text-gray-800"><span className="text-gray-500 mr-2">早餐</span>{d.breakfast}</div>
+                <div className="text-sm text-gray-800 mt-1"><span className="text-gray-500 mr-2">午餐</span>{d.lunch}</div>
+                <div className="text-sm text-gray-800 mt-1"><span className="text-gray-500 mr-2">晚餐</span>{d.dinner}</div>
+                {d.snack && <div className="text-sm text-gray-800 mt-1"><span className="text-gray-500 mr-2">加餐</span>{d.snack}</div>}
+              </div>
+            ))}
           </div>
         </Card>
 
