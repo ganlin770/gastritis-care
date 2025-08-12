@@ -1,7 +1,7 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import type React from 'react';
+import { motion, type HTMLMotionProps } from 'framer-motion';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<HTMLMotionProps<'input'>, 'ref'> {
   label?: string;
   error?: string;
   icon?: React.ReactNode;
@@ -29,7 +29,7 @@ export const Input: React.FC<InputProps> = ({
         )}
         <motion.input
           whileFocus={{ scale: 1.01 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 25 } as any }
           className={`
             w-full px-6 py-4 text-lg
             ${icon ? 'pl-14' : ''}

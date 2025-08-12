@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import type React from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GitBranch, GitCommit, Clock, User, Hash, Calendar } from 'lucide-react';
+import { GitBranch, Clock, User, Hash } from 'lucide-react';
 import { Card } from '../ui/Card';
 
 interface Commit {

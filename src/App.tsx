@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './hooks/useAuth';
 import { AuthForm } from './components/features/AuthForm';
@@ -31,7 +31,7 @@ function App() {
   useEffect(() => {
     if (user) {
       // 订阅症状恶化提醒
-      const subscription = subscribeToSymptomAlerts(user.id, (severity, data) => {
+      const subscription = subscribeToSymptomAlerts(user.id, (severity) => {
         if (severity === 'severe') {
           setToast({
             message: '⚠️ 检测到严重症状，建议立即就医或联系医生',
