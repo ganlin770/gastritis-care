@@ -65,7 +65,6 @@ export const CareTips: React.FC<{ signals: CareSignal }> = ({ signals }) => {
             ]}
           />
         )}
-        <div className="text-xs text-gray-500">科普信息，不替代医疗诊断；请遵医嘱用药并定期复查。</div>
       </motion.div>
     </Card>
   );
