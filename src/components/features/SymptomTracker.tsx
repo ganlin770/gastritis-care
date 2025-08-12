@@ -5,6 +5,7 @@ import { Slider } from '../ui/Slider';
 import { Card } from '../ui/Card';
 import { databaseService } from '../../services/database';
 import { useAuth } from '../../hooks/useAuth';
+import { CareTips } from './CareTips';
 
 interface SymptomButtonProps {
   icon: string;
@@ -170,6 +171,17 @@ export const SymptomTracker: React.FC = () => {
         >
           记录症状
         </Button>
+
+        {/* 实时照护提示（根据当前用户输入实时变化） */}
+        <div className="mt-6">
+          <CareTips
+            signals={{
+              acidReflux: symptoms.acidReflux,
+              throatDiscomfort: symptoms.throatDiscomfort,
+              appetiteLevel: appetiteLevel,
+            }}
+          />
+        </div>
 
         {/* 成功提示 */}
         <AnimatePresence>

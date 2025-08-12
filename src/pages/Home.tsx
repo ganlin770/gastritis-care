@@ -5,6 +5,7 @@ import { Button } from '../components/ui/Button';
 import { databaseService } from '../services/database';
 import { useAuth } from '../hooks/useAuth';
 import type { SymptomRecord, Food } from '../types';
+import { CareTips } from '../components/features/CareTips';
 
 export const Home: React.FC = () => {
   const { user } = useAuth();
@@ -125,6 +126,16 @@ export const Home: React.FC = () => {
         animate="show"
         className="max-w-4xl mx-auto p-6 space-y-6"
       >
+        {/* 今日重点照护，根据症状动态给出方案要点 */}
+        <motion.div variants={item}>
+          <CareTips
+            signals={{
+              acidReflux: !!todaySymptom?.acid_reflux,
+              throatDiscomfort: !!todaySymptom?.throat_discomfort,
+              appetiteLevel: todaySymptom?.appetite_level,
+            }}
+          />
+        </motion.div>
         {/* 今日症状 */}
         <motion.div variants={item}>
           <Card>

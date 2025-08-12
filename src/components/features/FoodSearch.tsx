@@ -78,6 +78,7 @@ export const FoodSearch: React.FC = () => {
   const [foods, setFoods] = useState<Food[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [forThroat, setForThroat] = useState(false);
 
   const searchFoods = useCallback(async () => {
     if (!searchTerm.trim()) return;
@@ -85,7 +86,10 @@ export const FoodSearch: React.FC = () => {
     setLoading(true);
     setHasSearched(true);
     try {
-      const results = await databaseService.foods.search(searchTerm);
+      let results = await databaseService.foods.search(searchTerm);
+      if (forThroat) {
+        results = results.filter(f => f.for_throat_discomfort);
+      }
       setFoods(results);
     } catch (error) {
       console.error('Error searching foods:', error);
@@ -93,7 +97,7 @@ export const FoodSearch: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchTerm]);
+  }, [searchTerm, forThroat]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -112,7 +116,7 @@ export const FoodSearch: React.FC = () => {
     <div className="max-w-4xl mx-auto">
       {/* 搜索框 */}
       <Card className="mb-8">
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
           <Input
             type="text"
             value={searchTerm}
@@ -122,6 +126,10 @@ export const FoodSearch: React.FC = () => {
             icon={<Search className="w-5 h-5" />}
             className="flex-1"
           />
+          <label className="flex items-center gap-2 text-sm text-gray-700">
+            <input type="checkbox" checked={forThroat} onChange={(e) => setForThroat(e.target.checked)} />
+            只看可缓解喉咙不适
+          </label>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -131,6 +139,9 @@ export const FoodSearch: React.FC = () => {
           >
             {loading ? '搜索中...' : '查询'}
           </motion.button>
+        </div>
+        <div className="mt-3 text-xs text-gray-500">
+          饮食原则：清淡、温软、少油；避免辛辣/生冷/油炸与高盐腌熏。优选小米粥、蒸蛋、炖菜、瘦肉鱼类、熟软蔬菜。
         </div>
       </Card>
 
