@@ -5,6 +5,7 @@ import { AuthForm } from './components/features/AuthForm';
 import { Home } from './pages/Home';
 import { SymptomTracker } from './components/features/SymptomTracker';
 import { FoodSearch } from './components/features/FoodSearch';
+import { GitHistory } from './components/features/GitHistory';
 import { ToastContainer, Toast } from './components/ui/Toast';
 import { subscribeToSymptomAlerts } from './config/supabase';
 import { 
@@ -12,11 +13,12 @@ import {
   Search, 
   Activity, 
   User,
-  LogOut
+  LogOut,
+  GitBranch
 } from 'lucide-react';
 import { authService } from './services/auth';
 
-type TabType = 'home' | 'symptoms' | 'foods' | 'profile';
+type TabType = 'home' | 'symptoms' | 'foods' | 'git' | 'profile';
 
 function App() {
   const { user, loading } = useAuth();
@@ -78,6 +80,7 @@ function App() {
     { id: 'home' as TabType, label: '首页', icon: HomeIcon },
     { id: 'symptoms' as TabType, label: '症状', icon: Activity },
     { id: 'foods' as TabType, label: '食物', icon: Search },
+    { id: 'git' as TabType, label: '历史', icon: GitBranch },
     { id: 'profile' as TabType, label: '我的', icon: User },
   ];
 
@@ -123,6 +126,19 @@ function App() {
             >
               <h1 className="text-3xl font-black text-black mb-6">食物查询</h1>
               <FoodSearch />
+            </motion.div>
+          )}
+
+          {activeTab === 'git' && (
+            <motion.div
+              key="git"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+              className="p-6"
+            >
+              <GitHistory />
             </motion.div>
           )}
           
