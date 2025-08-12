@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, AlertCircle } from 'lucide-react';
+import { Search, AlertCircle, Sparkles } from 'lucide-react';
 import { Input } from '../ui/Input';
 import { Card } from '../ui/Card';
 import { databaseService } from '../../services/database';
 import type { Food } from '../../types';
+import { askFoodAdvisor } from '../../services/ai/foodAdvisor';
 
 const FoodCard: React.FC<{ food: Food }> = ({ food }) => {
   const safetyColors = {
@@ -79,6 +80,13 @@ export const FoodSearch: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [forThroat, setForThroat] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiAnswer, setAiAnswer] = useState<{
+    level: 'safe' | 'caution' | 'avoid';
+    reason: string;
+    alternatives?: string[];
+    preparationTips?: string;
+  } | null>(null);
 
   const searchFoods = useCallback(async () => {
     if (!searchTerm.trim()) return;
@@ -99,6 +107,21 @@ export const FoodSearch: React.FC = () => {
     }
   }, [searchTerm, forThroat]);
 
+  const askAI = useCallback(async () => {
+    if (!searchTerm.trim()) return;
+    setAiLoading(true);
+    setAiAnswer(null);
+    try {
+      const res = await askFoodAdvisor(searchTerm.trim());
+      setAiAnswer(res);
+    } catch (e) {
+      console.error(e);
+      setAiAnswer({ level: 'caution', reason: '智能建议暂不可用，请稍后重试或咨询医生。' });
+    } finally {
+      setAiLoading(false);
+    }
+  }, [searchTerm]);
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       searchFoods();
@@ -116,7 +139,8 @@ export const FoodSearch: React.FC = () => {
     <div className="max-w-4xl mx-auto">
       {/* 搜索框 */}
       <Card className="mb-8">
-        <div className="flex gap-4 items-center">
+        {/* Apple-style glass effect */}
+        <div className="flex gap-4 items-center backdrop-blur-md bg-white/60 border border-gray-200 rounded-2xl p-4">
           <Input
             type="text"
             value={searchTerm}
@@ -135,14 +159,49 @@ export const FoodSearch: React.FC = () => {
             whileTap={{ scale: 0.95 }}
             onClick={searchFoods}
             disabled={loading}
-            className="px-8 py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50"
           >
             {loading ? '搜索中...' : '查询'}
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={askAI}
+            disabled={aiLoading}
+            className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold flex items-center gap-2 shadow-sm disabled:opacity-50"
+            title="GPT-5 nano 智能建议"
+          >
+            <Sparkles className="w-4 h-4" />{aiLoading ? '分析中...' : '智能建议'}
           </motion.button>
         </div>
         <div className="mt-3 text-xs text-gray-500">
           饮食原则：清淡、温软、少油；避免辛辣/生冷/油炸与高盐腌熏。优选小米粥、蒸蛋、炖菜、瘦肉鱼类、熟软蔬菜。
         </div>
+        {aiAnswer && (
+          <div className="mt-4 rounded-2xl p-4 border-2"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.7), rgba(240,240,240,0.5))',
+            }}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-4 h-4 text-black" />
+              <span className="text-sm text-gray-700">GPT-5 nano 智能分析</span>
+              <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${aiAnswer.level === 'safe' ? 'bg-green-600 text-white' : aiAnswer.level === 'avoid' ? 'bg-red-600 text-white' : 'bg-yellow-600 text-black'}`}>{aiAnswer.level}</span>
+            </div>
+            <p className="text-sm text-gray-800 leading-relaxed">{aiAnswer.reason}</p>
+            {aiAnswer.preparationTips && (
+              <p className="text-sm text-gray-600 mt-2">做法建议：{aiAnswer.preparationTips}</p>
+            )}
+            {aiAnswer.alternatives && aiAnswer.alternatives.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {aiAnswer.alternatives.map((alt, i) => (
+                  <span key={i} className="px-3 py-1 bg-gray-100 rounded-lg text-sm">{alt}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </Card>
 
       {/* 搜索结果 */}
