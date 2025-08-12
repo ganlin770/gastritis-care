@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './hooks/useAuth';
 import { AuthForm } from './components/features/AuthForm';
 import { Home } from './pages/Home';
+import { CarePlan } from './pages/CarePlan';
 import { SymptomTracker } from './components/features/SymptomTracker';
 import { FoodSearch } from './components/features/FoodSearch';
 import { GitHistory } from './components/features/GitHistory';
@@ -18,7 +19,7 @@ import {
 } from 'lucide-react';
 import { authService } from './services/auth';
 
-type TabType = 'home' | 'symptoms' | 'foods' | 'git' | 'profile';
+type TabType = 'home' | 'care' | 'symptoms' | 'foods' | 'git' | 'profile';
 
 function App() {
   const { user, loading } = useAuth();
@@ -78,6 +79,7 @@ function App() {
 
   const tabs = [
     { id: 'home' as TabType, label: '首页', icon: HomeIcon },
+    { id: 'care' as TabType, label: '方案', icon: HomeIcon },
     { id: 'symptoms' as TabType, label: '症状', icon: Activity },
     { id: 'foods' as TabType, label: '食物', icon: Search },
     { id: 'git' as TabType, label: '历史', icon: GitBranch },
@@ -126,6 +128,18 @@ function App() {
             >
               <h1 className="text-3xl font-black text-black mb-6">食物查询</h1>
               <FoodSearch />
+            </motion.div>
+          )}
+
+          {activeTab === 'care' && (
+            <motion.div
+              key="care"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <CarePlan />
             </motion.div>
           )}
 
