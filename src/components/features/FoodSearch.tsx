@@ -116,7 +116,7 @@ export const FoodSearch: React.FC = () => {
       setAiAnswer(res);
     } catch (e) {
       console.error(e);
-      setAiAnswer({ level: 'caution', reason: '智能建议暂不可用，请稍后重试或咨询医生。' });
+      setAiAnswer({ level: 'caution', reason: '智能建议暂不可用，请稍后重试或在部署环境配置 VITE_OPENAI_API_KEY。' });
     } finally {
       setAiLoading(false);
     }
