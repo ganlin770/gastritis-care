@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './hooks/useAuth';
-import { AuthForm } from './components/features/AuthForm';
 import { Home } from './pages/Home';
 import CareDashboard from './pages/CareDashboard';
 import { CarePlan } from './pages/CarePlan';
@@ -74,9 +73,7 @@ function App() {
     );
   }
 
-  if (!user) {
-    return <AuthForm />;
-  }
+  // 关闭登录/注册：未登录也可进入应用（游客模式）
 
   const tabs = [
     { id: 'home' as TabType, label: '首页', icon: HomeIcon },
@@ -182,30 +179,41 @@ function App() {
               <div className="bg-white rounded-2xl p-6 border border-gray-200">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <p className="text-sm text-gray-500">当前用户</p>
-                    <p className="text-xl font-bold text-black">{user.email}</p>
+                    <p className="text-sm text-gray-500">{user ? '当前用户' : '当前模式'}</p>
+                    <p className="text-xl font-bold text-black">{user ? user.email : '游客（未登录）'}</p>
                   </div>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    退出登录
-                  </motion.button>
+                  {user && (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      退出登录
+                    </motion.button>
+                  )}
                 </div>
                 
                 <div className="space-y-4">
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500 mb-1">用户ID</p>
-                    <p className="font-mono text-xs">{user.id}</p>
-                  </div>
-                  
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500 mb-1">注册时间</p>
-                    <p>{new Date(user.created_at).toLocaleDateString('zh-CN')}</p>
-                  </div>
+                  {user ? (
+                    <>
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <p className="text-sm text-gray-500 mb-1">用户ID</p>
+                        <p className="font-mono text-xs">{user.id}</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <p className="text-sm text-gray-500 mb-1">注册时间</p>
+                        <p>{new Date(user.created_at).toLocaleDateString('zh-CN')}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-500 mb-1">说明</p>
+                      <p className="text-gray-700">当前为游客模式，登录/注册已关闭；数据写入功能受限。</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

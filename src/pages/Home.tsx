@@ -81,7 +81,8 @@ export const Home: React.FC = () => {
     show: { opacity: 1, y: 0 }
   };
 
-  if (loading) {
+  // 未登录时直接以游客模式展示，不阻塞加载
+  if (loading && user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <motion.div
