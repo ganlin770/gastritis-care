@@ -80,6 +80,7 @@ function App() {
     { id: 'care' as TabType, label: '方案', icon: Activity },
     { id: 'symptoms' as TabType, label: '症状', icon: Activity },
     { id: 'foods' as TabType, label: '食物', icon: Search },
+    { id: 'git' as TabType, label: '历史', icon: GitBranch },
     { id: 'profile' as TabType, label: '我的', icon: User },
   ];
 
@@ -152,7 +153,18 @@ function App() {
             </motion.div>
           )}
 
-          {/* 已移除 Git 提交历史入口 */}
+          {activeTab === 'git' && (
+            <motion.div
+              key="git"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+              className="p-6"
+            >
+              <GitHistory />
+            </motion.div>
+          )}
           
           {activeTab === 'profile' && (
             <motion.div

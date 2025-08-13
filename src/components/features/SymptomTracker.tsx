@@ -4,7 +4,6 @@ import { Button } from '../ui/Button';
 import { Slider } from '../ui/Slider';
 import { Card } from '../ui/Card';
 import { databaseService } from '../../services/database';
-import { guestData } from '../../services/guestData';
 import { useAuth } from '../../hooks/useAuth';
 import { CareTips } from './CareTips';
 
@@ -60,10 +59,12 @@ export const SymptomTracker: React.FC = () => {
   ];
 
   const handleSubmit = async () => {
+    if (!user) return;
+
     setLoading(true);
     try {
-      const payload = {
-        user_id: user ? user.id : 'guest',
+      await databaseService.symptoms.create({
+        user_id: user.id,
         pain_level: painLevel,
         throat_discomfort: symptoms.throatDiscomfort,
         bloating: symptoms.bloating,
@@ -72,14 +73,8 @@ export const SymptomTracker: React.FC = () => {
         appetite_level: appetiteLevel,
         recorded_at: new Date().toISOString(),
         triggers: [],
-        notes,
-      } as const;
-
-      if (user) {
-        await databaseService.symptoms.create(payload as any);
-      } else {
-        await guestData.symptoms.create(payload as any);
-      }
+        notes
+      });
 
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);

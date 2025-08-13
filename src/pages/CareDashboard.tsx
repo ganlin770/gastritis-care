@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import { databaseService } from '../services/database';
-import { guestData } from '../services/guestData';
 import type { SymptomRecord, Food } from '../types';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -62,14 +61,8 @@ export const CareDashboard: React.FC = () => {
       setLoading(true);
       try {
         const [list, todaySymptom] = await Promise.all([
-          (user
-            ? databaseService.symptoms.getByUser(user.id, 14)
-            : guestData.symptoms.getByUser('guest', 14)
-          ).catch(() => []),
-          (user
-            ? databaseService.symptoms.getTodaySymptom(user.id)
-            : guestData.symptoms.getTodaySymptom('guest')
-          ).catch(() => null),
+          databaseService.symptoms.getByUser(user.id, 14).catch(() => []),
+          databaseService.symptoms.getTodaySymptom(user.id).catch(() => null),
         ]);
         if (!mounted) return;
         setRecent(list || []);
@@ -88,8 +81,9 @@ export const CareDashboard: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-       const kw = throat ? '喉' : (acidReflux ? '粥' : '温');
-       const list = await databaseService.foods.search(kw).catch(() => []);
+      if (!user) return;
+      const kw = throat ? '喉' : (acidReflux ? '粥' : '温');
+      const list = await databaseService.foods.search(kw).catch(() => []);
       setFoods(list?.slice(0, 6) || []);
     })();
   }, [user, throat, acidReflux]);
@@ -140,7 +134,7 @@ export const CareDashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 pb-28">
+      <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* KPIs */}
         <Card hoverable className="lg:col-span-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

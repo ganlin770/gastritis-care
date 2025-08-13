@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { databaseService } from '../services/database';
-import { guestData } from '../services/guestData';
 import { useAuth } from '../hooks/useAuth';
 import type { SymptomRecord, Food } from '../types';
 import { CareTips } from '../components/features/CareTips';
@@ -16,16 +15,18 @@ export const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadDashboardData();
+    if (user) {
+      loadDashboardData();
+    }
   }, [user]);
 
   const loadDashboardData = async () => {
+    if (!user) return;
+
     setLoading(true);
     try {
-      // 获取今日症状（游客/用户）
-      const symptom = user
-        ? await databaseService.symptoms.getTodaySymptom(user.id)
-        : await guestData.symptoms.getTodaySymptom('guest');
+      // 获取今日症状
+      const symptom = await databaseService.symptoms.getTodaySymptom(user.id);
       setTodaySymptom(symptom);
 
       // 根据症状推荐食物
